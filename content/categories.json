@@ -1,0 +1,230 @@
+{
+  "description": "Hacker Pyramid main game categories. Each category has 7 words/phrases. The clue-giver describes each word and the guesser must say it. All hacker/security/tech themed with DFIU tone.",
+  "categories": [
+    {
+      "name": "Port Authority",
+      "difficulty": "easy",
+      "words": ["80", "443", "22", "3389", "8080", "3306", "53"]
+    },
+    {
+      "name": "Getting Phishy",
+      "difficulty": "easy",
+      "words": ["spear", "whaling", "vishing", "smishing", "clone", "angler", "pharming"]
+    },
+    {
+      "name": "Shell Shocked",
+      "difficulty": "easy",
+      "words": ["bash", "zsh", "PowerShell", "cmd", "ksh", "fish", "tcsh"]
+    },
+    {
+      "name": "Crypto Currency",
+      "difficulty": "medium",
+      "words": ["RSA", "AES", "Diffie-Hellman", "SHA", "Blowfish", "ChaCha20", "Twofish"]
+    },
+    {
+      "name": "Hack the Planet",
+      "difficulty": "medium",
+      "words": ["Stuxnet", "WannaCry", "NotPetya", "SolarWinds", "Log4Shell", "Heartbleed", "EternalBlue"]
+    },
+    {
+      "name": "Social Engineering",
+      "difficulty": "easy",
+      "words": ["pretexting", "tailgating", "baiting", "quid pro quo", "watering hole", "dumpster diving", "shoulder surfing"]
+    },
+    {
+      "name": "Kernel Panic",
+      "difficulty": "medium",
+      "words": ["fork bomb", "null pointer", "stack overflow", "segfault", "deadlock", "race condition", "memory leak"]
+    },
+    {
+      "name": "Man in the Middle",
+      "difficulty": "medium",
+      "words": ["proxy", "relay", "ARP spoof", "SSL strip", "DNS hijack", "session hijack", "evil twin"]
+    },
+    {
+      "name": "Sudo Make Me a Sandwich",
+      "difficulty": "easy",
+      "words": ["cookies", "spam", "salt", "fork", "breadcrumbs", "raspberry pi", "Java"]
+    },
+    {
+      "name": "Script Kiddie Starter Pack",
+      "difficulty": "easy",
+      "words": ["Kali Linux", "Metasploit", "Wireshark", "Nmap", "Burp Suite", "John the Ripper", "Hydra"]
+    },
+    {
+      "name": "It's Always DNS",
+      "difficulty": "medium",
+      "words": ["A record", "CNAME", "MX", "TXT", "NS", "PTR", "AAAA"]
+    },
+    {
+      "name": "Distro Hopping",
+      "difficulty": "easy",
+      "words": ["Ubuntu", "Arch", "Fedora", "Debian", "Gentoo", "Kali", "Tails"]
+    },
+    {
+      "name": "Packet Capture",
+      "difficulty": "medium",
+      "words": ["SYN", "ACK", "FIN", "RST", "TTL", "checksum", "payload"]
+    },
+    {
+      "name": "Three Letter Agencies",
+      "difficulty": "easy",
+      "words": ["NSA", "CIA", "FBI", "DHS", "NRO", "GCHQ", "BND"]
+    },
+    {
+      "name": "Web of Lies",
+      "difficulty": "medium",
+      "words": ["XSS", "CSRF", "SQL injection", "SSRF", "IDOR", "RCE", "path traversal"]
+    },
+    {
+      "name": "Password Sins",
+      "difficulty": "easy",
+      "words": ["123456", "password", "qwerty", "reuse", "sticky note", "admin", "letmein"]
+    },
+    {
+      "name": "Blue Screen of Death",
+      "difficulty": "medium",
+      "words": ["IRQL_NOT_LESS_OR_EQUAL", "PAGE_FAULT", "KERNEL_DATA_INPAGE_ERROR", "DRIVER_IRQL", "CRITICAL_PROCESS_DIED", "SYSTEM_SERVICE_EXCEPTION", "BAD_POOL_HEADER"]
+    },
+    {
+      "name": "The Dark Side",
+      "difficulty": "medium",
+      "words": ["Tor", "Silk Road", "onion routing", "I2P", "dead drop", "mixing service", "hidden service"]
+    },
+    {
+      "name": "Git Gud",
+      "difficulty": "easy",
+      "words": ["commit", "merge", "rebase", "cherry-pick", "stash", "blame", "bisect"]
+    },
+    {
+      "name": "Container Ship",
+      "difficulty": "medium",
+      "words": ["Docker", "Kubernetes", "pod", "container escape", "registry", "sidecar", "namespace"]
+    },
+    {
+      "name": "Rainbow Table Manners",
+      "difficulty": "hard",
+      "words": ["MD5", "SHA-256", "bcrypt", "argon2", "NTLM", "salting", "collision"]
+    },
+    {
+      "name": "Living Off the Land",
+      "difficulty": "hard",
+      "words": ["PowerShell", "WMI", "certutil", "rundll32", "mshta", "regsvr32", "bitsadmin"]
+    },
+    {
+      "name": "This Meeting Could Have Been an Email",
+      "difficulty": "easy",
+      "words": ["Zoom", "Teams", "Slack", "WebEx", "Google Meet", "Discord", "Jitsi"]
+    },
+    {
+      "name": "APT Pupil",
+      "difficulty": "hard",
+      "words": ["Fancy Bear", "Cozy Bear", "Lazarus Group", "Equation Group", "Sandworm", "Charming Kitten", "Scattered Spider"]
+    },
+    {
+      "name": "Capture the Flag",
+      "difficulty": "medium",
+      "words": ["pwn", "reverse engineering", "forensics", "web exploit", "crypto challenge", "steganography", "binary exploitation"]
+    },
+    {
+      "name": "RFC YOLO",
+      "difficulty": "hard",
+      "words": ["RFC 1149", "RFC 2549", "RFC 2324", "RFC 7168", "RFC 8140", "RFC 1925", "RFC 3514"]
+    },
+    {
+      "name": "The OSI Cocktail Party",
+      "difficulty": "medium",
+      "words": ["physical", "data link", "network", "transport", "session", "presentation", "application"]
+    },
+    {
+      "name": "Malware Taxonomy",
+      "difficulty": "easy",
+      "words": ["ransomware", "trojan", "worm", "rootkit", "keylogger", "adware", "spyware"]
+    },
+    {
+      "name": "Patch Tuesday",
+      "difficulty": "hard",
+      "words": ["zero-day", "CVE", "hotfix", "service pack", "rollback", "out-of-band", "advisory"]
+    },
+    {
+      "name": "Silicon Valley Dropouts",
+      "difficulty": "medium",
+      "words": ["Steve Jobs", "Bill Gates", "Mark Zuckerberg", "Michael Dell", "Larry Ellison", "Jack Dorsey", "Travis Kalanick"]
+    },
+    {
+      "name": "Cloud Atlas",
+      "difficulty": "medium",
+      "words": ["S3 bucket", "Lambda", "EC2", "IAM", "VPC", "CloudFormation", "Route 53"]
+    },
+    {
+      "name": "Alphabet Soup",
+      "difficulty": "easy",
+      "words": ["API", "CLI", "GUI", "SDK", "SSH", "VPN", "DNS"]
+    },
+    {
+      "name": "2600 Hertz",
+      "difficulty": "hard",
+      "words": ["blue box", "red box", "Captain Crunch", "phreaking", "war dialing", "DTMF", "trunk line"]
+    },
+    {
+      "name": "Cyber Insurance Claim",
+      "difficulty": "medium",
+      "words": ["data breach", "incident response", "forensics", "ransomware payment", "class action", "notification", "regulatory fine"]
+    },
+    {
+      "name": "Hardware Hacking",
+      "difficulty": "hard",
+      "words": ["JTAG", "UART", "logic analyzer", "bus pirate", "firmware dump", "side channel", "glitching"]
+    },
+    {
+      "name": "The Blockchain Gang",
+      "difficulty": "medium",
+      "words": ["smart contract", "rug pull", "gas fee", "mining", "cold wallet", "51% attack", "flash loan"]
+    },
+    {
+      "name": "DEFCON Essentials",
+      "difficulty": "easy",
+      "words": ["badge", "village", "goon", "chill-out room", "wall of sheep", "lock pick", "Mohawk"]
+    },
+    {
+      "name": "Red Team Rising",
+      "difficulty": "medium",
+      "words": ["pivot", "lateral movement", "persistence", "exfiltration", "C2", "implant", "beacon"]
+    },
+    {
+      "name": "Log Jammin'",
+      "difficulty": "medium",
+      "words": ["syslog", "SIEM", "Splunk", "ELK stack", "journald", "event ID", "audit trail"]
+    },
+    {
+      "name": "Garbage In Garbage Out",
+      "difficulty": "medium",
+      "words": ["fuzzing", "input validation", "sanitization", "encoding", "escaping", "type coercion", "boundary testing"]
+    },
+    {
+      "name": "Things That Should Have a Password",
+      "difficulty": "easy",
+      "words": ["S3 bucket", "MongoDB", "Elasticsearch", "Jenkins", "admin panel", "Redis", "printer"]
+    },
+    {
+      "name": "Wire Fraud",
+      "difficulty": "hard",
+      "words": ["Ethernet", "fiber optic", "coaxial", "Cat 6", "crossover", "patch cable", "plenum"]
+    },
+    {
+      "name": "Crypto Bros vs Cryptographers",
+      "difficulty": "medium",
+      "words": ["key exchange", "certificate", "nonce", "entropy", "HMAC", "digital signature", "perfect forward secrecy"]
+    },
+    {
+      "name": "The Compliance Treadmill",
+      "difficulty": "medium",
+      "words": ["SOC 2", "PCI DSS", "HIPAA", "GDPR", "ISO 27001", "FedRAMP", "NIST"]
+    },
+    {
+      "name": "Dead Languages",
+      "difficulty": "hard",
+      "words": ["COBOL", "Fortran", "Pascal", "LISP", "Ada", "Perl", "Visual Basic"]
+    }
+  ]
+}

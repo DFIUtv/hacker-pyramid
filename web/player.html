@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hacker Pyramid - Player</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #0a0a0a;
+  color: #e5e5e5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+h1 { color: #f59e0b; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center; }
+
+.status { color: #888; text-align: center; margin: 1rem 0; font-size: 0.9rem; }
+
+/* Clue-giver view: shows words to describe */
+.word-card {
+  background: #111;
+  border: 3px solid #f59e0b;
+  border-radius: 12px;
+  padding: 2rem 3rem;
+  text-align: center;
+  margin: 1rem 0;
+  min-width: 280px;
+}
+.word-card .label { color: #888; font-size: 0.8rem; margin-bottom: 0.5rem; }
+.word-card .word { font-size: 2rem; font-weight: 800; color: #fff; }
+.word-card .cat-label { color: #f59e0b; font-size: 0.9rem; margin-top: 0.5rem; }
+
+.word-list-player {
+  width: 100%;
+  max-width: 400px;
+  margin: 1rem 0;
+}
+.word-item-player {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid #1a1a1a;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.word-item-player.correct { color: #22c55e; }
+.word-item-player.pass { color: #f59e0b; opacity: 0.5; }
+.word-item-player.illegal { color: #ef4444; text-decoration: line-through; }
+.word-item-player.current { color: #f59e0b; font-weight: 700; font-size: 1.2rem; }
+
+/* Timer */
+.timer-player {
+  font-size: 4rem;
+  font-weight: 900;
+  text-align: center;
+  margin: 0.5rem 0;
+  font-variant-numeric: tabular-nums;
+}
+.timer-player.warning { color: #f59e0b; }
+.timer-player.danger { color: #ef4444; }
+
+/* Winner's Circle: clue-giver sees category + examples */
+.wc-card {
+  background: #111;
+  border: 3px solid #f59e0b;
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  text-align: center;
+  margin: 1rem 0;
+  min-width: 300px;
+}
+.wc-card .category { font-size: 1.6rem; font-weight: 800; color: #f59e0b; margin-bottom: 1rem; }
+.wc-card .examples { list-style: none; }
+.wc-card .examples li {
+  padding: 0.4rem 0;
+  font-size: 1.1rem;
+  color: #ccc;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+/* Guesser view */
+.guesser-msg {
+  font-size: 1.3rem;
+  color: #888;
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.score-display {
+  font-size: 1.2rem;
+  color: #f59e0b;
+  text-align: center;
+  margin: 0.5rem 0;
+}
+
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<h1>HACKER PYRAMID</h1>
+<div id="app">
+  <div class="status">Connecting...</div>
+</div>
+
+<script>
+const WS_URL = `ws://${location.host}`;
+let ws = null;
+let state = null;
+let myRole = null; // 'clue-giver' or 'guesser' or null
+
+function connect() {
+  ws = new WebSocket(WS_URL);
+  ws.onopen = () => {
+    ws.send(JSON.stringify({ type: 'register-player' }));
+  };
+  ws.onmessage = (e) => {
+    const msg = JSON.parse(e.data);
+    if (msg.type === 'game-state') {
+      state = msg.state;
+      detectRole();
+      render();
+    }
+  };
+  ws.onclose = () => setTimeout(connect, 2000);
+  ws.onerror = () => ws.close();
+}
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function detectRole() {
+  // Player can't easily auto-detect role since host manages players
+  // Show clue-giver view by default (host can switch on the console)
+  // For now, show a role-appropriate view based on URL params
+  const params = new URLSearchParams(location.search);
+  if (params.get('role')) {
+    myRole = params.get('role');
+  }
+}
+
+function render() {
+  if (!state) return;
+  const app = document.getElementById('app');
+
+  if (state.phase === 'lobby') {
+    app.innerHTML = '<div class="status">Waiting for game to start...</div>';
+    return;
+  }
+
+  if (state.phase === 'category_select') {
+    app.innerHTML = `<div class="status">Waiting for category selection...</div>
+      <div class="score-display">Game ${state.gameNumber}</div>`;
+    return;
+  }
+
+  if (state.phase === 'category_ready' || state.phase === 'playing') {
+    renderPlaying(app);
+    return;
+  }
+
+  if (state.phase === 'category_result') {
+    const mg = state.mainGame;
+    const cat = mg.categories[mg.currentCategory];
+    const correct = mg.wordResults.filter(r => r === 'correct').length;
+    app.innerHTML = `
+      <div class="word-card">
+        <div class="cat-label">${esc(cat?.name)}</div>
+        <div class="word" style="font-size:1.5rem">${correct} / 7 correct</div>
+      </div>`;
+    return;
+  }
+
+  if (state.phase === 'game_end') {
+    app.innerHTML = `<div class="status">Game ${state.gameNumber} complete!</div>
+      ${state.teams.map((t, i) => `
+        <div class="score-display" style="color:${i===0?'#60a5fa':'#f87171'}">${esc(t.name)}: ${state.mainGame.scores[i]}</div>
+      `).join('')}`;
+    return;
+  }
+
+  if (state.phase === 'wc_setup') {
+    app.innerHTML = '<div class="status">Winner\'s Circle - Setting up...</div>';
+    return;
+  }
+
+  if (state.phase === 'wc_playing') {
+    renderWCPlaying(app);
+    return;
+  }
+
+  if (state.phase === 'wc_complete') {
+    const wc = state.winnersCircle;
+    app.innerHTML = `
+      <div class="score-display" style="font-size:2rem">Winner's Circle: ${wc.score} pts</div>
+      ${wc.solved.length === 6 ? '<div class="score-display" style="color:#22c55e;font-size:1.5rem">GRAND PRIZE!</div>' : ''}`;
+    return;
+  }
+
+  if (state.phase === 'game_over') {
+    app.innerHTML = `<div class="status">Game Over</div>
+      ${state.teams.map((t, i) => `
+        <div class="score-display" style="color:${i===0?'#60a5fa':'#f87171'};font-size:1.5rem">${esc(t.name)}: ${t.score}</div>
+      `).join('')}`;
+    return;
+  }
+
+  app.innerHTML = `<div class="status">${state.phase}</div>`;
+}
+
+function renderPlaying(el) {
+  const mg = state.mainGame;
+  const cat = mg.categories[mg.currentCategory];
+  const words = mg.words || [];
+  const t = mg.timeRemaining;
+  const timerClass = t <= 5 ? 'danger' : t <= 10 ? 'warning' : '';
+
+  if (myRole === 'guesser') {
+    // Guesser sees timer and category name only
+    el.innerHTML = `
+      <div class="timer-player ${timerClass}">${t}</div>
+      <div class="word-card">
+        <div class="cat-label">${esc(cat?.name)}</div>
+        <div class="word" style="font-size:1.3rem;color:#888">Listen to your partner!</div>
+      </div>
+      <div class="score-display">Correct so far: ${mg.wordResults.filter(r => r === 'correct').length}</div>`;
+    return;
+  }
+
+  // Clue-giver (default): sees all words with current highlighted
+  const currentWord = words[mg.currentWordIndex];
+  el.innerHTML = `
+    <div class="timer-player ${timerClass}">${t}</div>
+    <div class="word-card">
+      <div class="label">DESCRIBE THIS:</div>
+      <div class="word">${mg.wordResults[mg.currentWordIndex] ? '---' : esc(currentWord || '---')}</div>
+      <div class="cat-label">${esc(cat?.name)}</div>
+    </div>
+    <div class="word-list-player">
+      ${words.map((w, i) => {
+        const r = mg.wordResults[i];
+        const cls = r || (i === mg.currentWordIndex ? 'current' : '');
+        return `<div class="word-item-player ${cls}">
+          <span>${i + 1}.</span>
+          <span>${esc(w)}</span>
+          ${r ? `<span style="margin-left:auto;font-size:0.75rem">${r}</span>` : ''}
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function renderWCPlaying(el) {
+  const wc = state.winnersCircle;
+  const t = wc.timeRemaining;
+  const timerClass = t <= 10 ? 'danger' : t <= 20 ? 'warning' : '';
+  const curCat = wc.categories[wc.currentCategory];
+
+  if (myRole === 'guesser') {
+    // Guesser just sees timer -- they face away from the board
+    el.innerHTML = `
+      <div class="timer-player ${timerClass}">${t}</div>
+      <div class="guesser-msg">Name the category!</div>
+      <div class="score-display">${wc.solved.length} / 6 solved &mdash; ${wc.score} pts</div>`;
+    return;
+  }
+
+  // Clue-giver sees current category + examples
+  el.innerHTML = `
+    <div class="timer-player ${timerClass}">${t}</div>
+    ${curCat ? `
+      <div class="wc-card">
+        <div class="category">${esc(curCat.name)}</div>
+        ${curCat.examples ? `<ul class="examples">${curCat.examples.map(ex => `<li>${esc(ex)}</li>`).join('')}</ul>` : ''}
+      </div>` : ''}
+    <div class="score-display">${wc.solved.length} / 6 &mdash; ${wc.score} pts</div>`;
+}
+
+connect();
+</script>
+</body>
+</html>

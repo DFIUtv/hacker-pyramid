@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hacker Pyramid - Board</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #0a0a0a;
+  color: #e5e5e5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 2rem;
+  background: #0f0f0f;
+  border-bottom: 1px solid #222;
+}
+.header-bar h1 { color: #f59e0b; font-size: 1.5rem; letter-spacing: 0.06em; }
+.header-bar .scores {
+  display: flex;
+  gap: 2rem;
+}
+.team-score {
+  text-align: center;
+}
+.team-score .name { font-size: 0.8rem; color: #888; }
+.team-score .points { font-size: 1.8rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.team-score.team-0 .points { color: #60a5fa; }
+.team-score.team-1 .points { color: #f87171; }
+.team-score.active .name { color: #f59e0b; font-weight: 600; }
+
+.main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; }
+
+/* Pyramid board */
+.pyramid {
+  display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
+}
+.pyramid-row { display: flex; gap: 0.75rem; }
+.pyramid-cell {
+  padding: 1.2rem 2rem;
+  background: #111;
+  border: 3px solid #333;
+  border-radius: 10px;
+  text-align: center;
+  min-width: 200px;
+  transition: all 0.4s;
+}
+.pyramid-cell .cat-name { font-size: 1.1rem; font-weight: 700; }
+.pyramid-cell.played { opacity: 0.3; border-color: #222; }
+.pyramid-cell.active {
+  border-color: #f59e0b;
+  background: #2a2000;
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
+}
+
+/* Timer */
+.timer-big {
+  font-size: 6rem;
+  font-weight: 900;
+  text-align: center;
+  margin: 1rem 0;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+}
+.timer-big.warning { color: #f59e0b; }
+.timer-big.danger { color: #ef4444; animation: pulse 0.5s infinite alternate; }
+@keyframes pulse { to { opacity: 0.5; } }
+
+/* Word display (for audience) */
+.word-track {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+  max-width: 600px;
+  margin: 1rem 0;
+}
+.word-slot {
+  display: flex;
+  align-items: center;
+  padding: 0.6rem 1rem;
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  transition: all 0.3s;
+}
+.word-slot.correct { border-color: #22c55e; color: #22c55e; background: #0a1a0a; }
+.word-slot.pass { border-color: #f59e0b; color: #f59e0b; opacity: 0.5; }
+.word-slot.illegal { border-color: #ef4444; color: #ef4444; text-decoration: line-through; opacity: 0.5; }
+.word-slot.current { border-color: #f59e0b; background: #1a1500; }
+.word-slot .num { width: 2rem; color: #555; font-size: 0.85rem; }
+
+/* Category name overlay */
+.cat-banner {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #f59e0b;
+  text-align: center;
+  margin: 0.5rem 0;
+}
+
+/* Winner's Circle */
+.wc-pyramid {
+  display: flex; flex-direction: column; align-items: center; gap: 1rem;
+}
+.wc-row { display: flex; gap: 1rem; }
+.wc-cell {
+  padding: 1.5rem 2.5rem;
+  background: #111;
+  border: 3px solid #333;
+  border-radius: 10px;
+  text-align: center;
+  min-width: 200px;
+  transition: all 0.5s;
+}
+.wc-cell .wc-name { font-size: 1.2rem; font-weight: 700; }
+.wc-cell .wc-pts { color: #666; font-size: 0.85rem; margin-top: 0.25rem; }
+.wc-cell.current {
+  border-color: #f59e0b; background: #2a2000;
+  transform: scale(1.08);
+  box-shadow: 0 0 30px rgba(245, 158, 11, 0.3);
+}
+.wc-cell.solved {
+  border-color: #22c55e; background: #0a2a0a;
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.2);
+}
+.wc-cell.illegal { border-color: #ef4444; background: #2a0a0a; opacity: 0.4; }
+
+.wc-score-display {
+  font-size: 3rem; font-weight: 900; color: #f59e0b;
+  text-align: center; margin: 1rem 0;
+}
+
+.grand-prize {
+  font-size: 2.5rem; font-weight: 900; color: #22c55e;
+  text-align: center; animation: glow 1s infinite alternate;
+}
+@keyframes glow {
+  from { text-shadow: 0 0 10px rgba(34,197,94,0.3); }
+  to { text-shadow: 0 0 30px rgba(34,197,94,0.6); }
+}
+
+/* Phase messages */
+.phase-msg {
+  font-size: 1.5rem;
+  color: #888;
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.info-line {
+  font-size: 0.9rem;
+  color: #666;
+  text-align: center;
+  margin: 0.5rem 0;
+}
+
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="header-bar">
+  <h1>HACKER PYRAMID</h1>
+  <div class="scores" id="scoreboard"></div>
+</div>
+
+<div class="main" id="main-area">
+  <div class="phase-msg">Waiting for game to start...</div>
+</div>
+
+<script>
+const WS_URL = `ws://${location.host}`;
+let ws = null;
+let state = null;
+
+function connect() {
+  ws = new WebSocket(WS_URL);
+  ws.onopen = () => ws.send(JSON.stringify({ type: 'register-board' }));
+  ws.onmessage = (e) => {
+    const msg = JSON.parse(e.data);
+    if (msg.type === 'game-state') {
+      state = msg.state;
+      render();
+    }
+  };
+  ws.onclose = () => setTimeout(connect, 2000);
+  ws.onerror = () => ws.close();
+}
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function render() {
+  if (!state) return;
+
+  // Scoreboard
+  const sb = document.getElementById('scoreboard');
+  sb.innerHTML = state.teams.map((t, i) => `
+    <div class="team-score team-${i} ${state.mainGame.activeTeam === i ? 'active' : ''}">
+      <div class="name">${esc(t.name)}</div>
+      <div class="points">${state.mainGame.scores[i]}</div>
+    </div>
+  `).join('');
+
+  const main = document.getElementById('main-area');
+
+  if (state.phase === 'lobby') {
+    main.innerHTML = '<div class="phase-msg">Waiting for game to start...</div>';
+  } else if (state.phase === 'category_select') {
+    renderPyramidBoard(main);
+  } else if (state.phase === 'category_ready') {
+    renderCategoryReady(main);
+  } else if (state.phase === 'playing') {
+    renderPlaying(main);
+  } else if (state.phase === 'category_result') {
+    renderCategoryResult(main);
+  } else if (state.phase === 'game_end') {
+    renderGameEnd(main);
+  } else if (state.phase === 'wc_setup') {
+    main.innerHTML = `<div class="phase-msg">Winner's Circle</div>
+      <div class="info-line">Setting up...</div>`;
+  } else if (state.phase === 'wc_playing') {
+    renderWCPlaying(main);
+  } else if (state.phase === 'wc_complete') {
+    renderWCComplete(main);
+  } else if (state.phase === 'game_over') {
+    renderGameOver(main);
+  }
+}
+
+function renderPyramidBoard(el) {
+  const cats = state.mainGame.categories;
+  const rows = [[5], [3, 4], [0, 1, 2]]; // top, middle, bottom
+  el.innerHTML = `
+    <div class="info-line">Category ${state.mainGame.categoryPicks + 1}/6 &mdash; ${esc(state.teams[state.mainGame.activeTeam]?.name || '--')}'s pick</div>
+    <div class="pyramid">
+      ${rows.map(row => `
+        <div class="pyramid-row">
+          ${row.map(i => {
+            if (i >= cats.length) return '';
+            const c = cats[i];
+            return `<div class="pyramid-cell ${c.played ? 'played' : ''}">
+              <div class="cat-name">${esc(c.name)}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      `).join('')}
+    </div>`;
+}
+
+function renderCategoryReady(el) {
+  const mg = state.mainGame;
+  const cat = mg.categories[mg.currentCategory];
+  el.innerHTML = `
+    <div class="cat-banner">${esc(cat?.name)}</div>
+    <div class="timer-big">30</div>
+    <div class="info-line">Get ready...</div>`;
+}
+
+function renderPlaying(el) {
+  const mg = state.mainGame;
+  const cat = mg.categories[mg.currentCategory];
+  const words = mg.words || [];
+  const t = mg.timeRemaining;
+  const timerClass = t <= 5 ? 'danger' : t <= 10 ? 'warning' : '';
+
+  el.innerHTML = `
+    <div class="cat-banner">${esc(cat?.name)}</div>
+    <div class="timer-big ${timerClass}">${t}</div>
+    <div class="word-track">
+      ${words.map((w, i) => {
+        const r = mg.wordResults[i];
+        const cls = r || (i === mg.currentWordIndex ? 'current' : '');
+        return `<div class="word-slot ${cls}">
+          <span class="num">${i + 1}.</span>
+          ${r === 'correct' ? esc(w) : r ? esc(w) : (i <= mg.currentWordIndex ? '???' : '???')}
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function renderCategoryResult(el) {
+  const mg = state.mainGame;
+  const cat = mg.categories[mg.currentCategory];
+  const words = mg.words || [];
+  const correct = mg.wordResults.filter(r => r === 'correct').length;
+
+  el.innerHTML = `
+    <div class="cat-banner">${esc(cat?.name)}</div>
+    <div class="phase-msg">${correct} / ${words.length} correct</div>
+    <div class="word-track">
+      ${words.map((w, i) => {
+        const r = mg.wordResults[i] || 'unanswered';
+        return `<div class="word-slot ${r}">
+          <span class="num">${i + 1}.</span> ${esc(w)}
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function renderGameEnd(el) {
+  const s0 = state.mainGame.scores[0];
+  const s1 = state.mainGame.scores[1];
+  const winner = s0 > s1 ? 0 : s1 > s0 ? 1 : -1;
+  el.innerHTML = `
+    <div class="phase-msg">Game ${state.gameNumber} Complete</div>
+    ${state.teams.map((t, i) => `
+      <div style="font-size:2rem;color:${i===0?'#60a5fa':'#f87171'};text-align:center;margin:0.5rem">
+        ${esc(t.name)}: ${state.mainGame.scores[i]}
+        ${winner === i ? ' &#9733;' : ''}
+      </div>
+    `).join('')}
+    <div class="info-line" style="margin-top:1rem">
+      ${winner >= 0 ? `${esc(state.teams[winner].name)} advances to the Winner's Circle!` : 'Tied!'}
+    </div>`;
+}
+
+function renderWCPlaying(el) {
+  const wc = state.winnersCircle;
+  const t = wc.timeRemaining;
+  const timerClass = t <= 10 ? 'danger' : t <= 20 ? 'warning' : '';
+  const cats = wc.categories;
+  const rows = [[5], [3, 4], [0, 1, 2]];
+
+  el.innerHTML = `
+    <div class="timer-big ${timerClass}">${t}</div>
+    <div class="wc-pyramid">
+      ${rows.map(row => `
+        <div class="wc-row">
+          ${row.map(i => {
+            if (i >= cats.length) return '';
+            const c = cats[i];
+            const pts = c.tier === 'bottom' ? 100 : c.tier === 'middle' ? 250 : 500;
+            return `<div class="wc-cell ${c.status} ${wc.currentCategory === i ? 'current' : ''}">
+              <div class="wc-name">${esc(c.name)}</div>
+              <div class="wc-pts">${pts} pts</div>
+            </div>`;
+          }).join('')}
+        </div>
+      `).join('')}
+    </div>
+    <div class="wc-score-display">${wc.score} pts</div>`;
+}
+
+function renderWCComplete(el) {
+  const wc = state.winnersCircle;
+  const cats = wc.categories;
+  const rows = [[5], [3, 4], [0, 1, 2]];
+  const allSolved = wc.solved.length === 6;
+
+  el.innerHTML = `
+    ${allSolved ? '<div class="grand-prize">GRAND PRIZE!</div>' : ''}
+    <div class="wc-pyramid">
+      ${rows.map(row => `
+        <div class="wc-row">
+          ${row.map(i => {
+            if (i >= cats.length) return '';
+            const c = cats[i];
+            return `<div class="wc-cell ${c.status}">
+              <div class="wc-name">${esc(c.name)}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      `).join('')}
+    </div>
+    <div class="wc-score-display">${wc.score} pts</div>`;
+}
+
+function renderGameOver(el) {
+  el.innerHTML = `
+    <div class="phase-msg">Game Over</div>
+    ${state.teams.map((t, i) => `
+      <div style="font-size:2.5rem;color:${i===0?'#60a5fa':'#f87171'};text-align:center;margin:0.5rem;font-weight:800">
+        ${esc(t.name)}: ${t.score}
+      </div>
+    `).join('')}`;
+}
+
+connect();
+</script>
+</body>
+</html>

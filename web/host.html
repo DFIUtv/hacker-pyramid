@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hacker Pyramid - Host Console</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #0a0a0a;
+  color: #e5e5e5;
+  min-height: 100vh;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  border-bottom: 1px solid #222;
+  background: #0f0f0f;
+}
+header h1 {
+  color: #f59e0b;
+  font-size: 1.3rem;
+  letter-spacing: 0.05em;
+}
+header h1 span { color: #666; font-weight: 400; font-size: 0.85rem; margin-left: 0.5rem; }
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.8rem;
+  color: #888;
+}
+.ws-dot { width: 8px; height: 8px; border-radius: 50%; background: #ef4444; display: inline-block; }
+.ws-dot.ok { background: #22c55e; }
+#phase-label { color: #f59e0b; font-weight: 600; }
+
+.container { padding: 1rem 1.5rem; max-width: 1400px; margin: 0 auto; }
+
+/* --- Lobby --- */
+.lobby { display: flex; gap: 2rem; flex-wrap: wrap; }
+.lobby-section { flex: 1; min-width: 300px; }
+.lobby-section h2 { color: #f59e0b; margin-bottom: 1rem; font-size: 1.1rem; }
+
+.team-card {
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+.team-card h3 { margin-bottom: 0.5rem; }
+.team-card.team-0 { border-left: 3px solid #3b82f6; }
+.team-card.team-0 h3 { color: #60a5fa; }
+.team-card.team-1 { border-left: 3px solid #ef4444; }
+.team-card.team-1 h3 { color: #f87171; }
+
+.team-players { margin: 0.5rem 0; }
+.team-player {
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.25rem 0; font-size: 0.9rem;
+}
+.team-player .role { color: #888; font-size: 0.75rem; }
+
+.add-row {
+  display: flex; gap: 0.5rem; margin-top: 0.5rem;
+}
+.add-row input {
+  flex: 1; padding: 0.4rem 0.6rem;
+  background: #1a1a1a; border: 1px solid #333; border-radius: 4px;
+  color: #ccc; font-size: 0.85rem;
+}
+
+/* Category picker */
+.cat-picker {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.5rem; margin: 0.75rem 0;
+}
+.cat-chip {
+  padding: 0.4rem 0.7rem;
+  background: #1a1a1a; border: 1px solid #333; border-radius: 6px;
+  cursor: pointer; font-size: 0.8rem; transition: all 0.15s;
+}
+.cat-chip:hover { border-color: #555; }
+.cat-chip.selected { border-color: #f59e0b; background: #2a2000; color: #fbbf24; }
+.cat-chip .diff {
+  font-size: 0.65rem; color: #666; margin-left: 0.3rem;
+}
+
+/* --- Main Game --- */
+.game-grid { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+.game-left { flex: 2; min-width: 400px; }
+.game-right { flex: 1; min-width: 250px; }
+
+.pyramid-board {
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  margin: 1rem 0;
+}
+.pyramid-row { display: flex; gap: 0.5rem; }
+.pyramid-cell {
+  padding: 0.6rem 1.2rem;
+  background: #1a1a1a; border: 2px solid #333; border-radius: 6px;
+  cursor: pointer; font-size: 0.85rem; text-align: center;
+  min-width: 140px; transition: all 0.2s;
+}
+.pyramid-cell:hover { border-color: #555; }
+.pyramid-cell.played { opacity: 0.4; cursor: default; border-color: #222; }
+.pyramid-cell.active { border-color: #f59e0b; background: #2a2000; }
+
+.word-list {
+  background: #111; border: 1px solid #333; border-radius: 8px;
+  padding: 1rem; margin: 1rem 0;
+}
+.word-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.5rem 0.75rem; border-bottom: 1px solid #1a1a1a;
+  font-size: 1rem;
+}
+.word-item:last-child { border-bottom: none; }
+.word-item.current { background: #1a1500; border-radius: 4px; }
+.word-item .word-text { font-weight: 600; flex: 1; }
+.word-item .word-actions { display: flex; gap: 0.4rem; }
+
+.timer-display {
+  font-size: 2.5rem; font-weight: 700; text-align: center;
+  padding: 0.5rem; font-variant-numeric: tabular-nums;
+}
+.timer-display.warning { color: #f59e0b; }
+.timer-display.danger { color: #ef4444; }
+
+.scoreboard {
+  background: #111; border: 1px solid #333; border-radius: 8px;
+  padding: 1rem; margin: 0.5rem 0;
+}
+.score-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.4rem 0;
+}
+.score-row .team-name { font-weight: 600; }
+.score-row .score { font-size: 1.3rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.score-row.team-0 .team-name { color: #60a5fa; }
+.score-row.team-0 .score { color: #60a5fa; }
+.score-row.team-1 .team-name { color: #f87171; }
+.score-row.team-1 .score { color: #f87171; }
+.score-row.active { background: #1a1a1a; border-radius: 4px; padding: 0.4rem 0.5rem; }
+
+.score-adjust { display: flex; gap: 0.25rem; }
+.score-adjust button {
+  padding: 0.15rem 0.4rem; font-size: 0.7rem;
+  background: #222; border: 1px solid #333; color: #888;
+  border-radius: 3px; cursor: pointer;
+}
+
+/* --- Winner's Circle --- */
+.wc-pyramid {
+  display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
+  margin: 1.5rem 0;
+}
+.wc-row { display: flex; gap: 0.75rem; }
+.wc-cell {
+  padding: 1rem 1.5rem;
+  background: #1a1a1a; border: 2px solid #333; border-radius: 8px;
+  cursor: pointer; text-align: center; min-width: 160px;
+  transition: all 0.2s;
+}
+.wc-cell.current { border-color: #f59e0b; background: #2a2000; }
+.wc-cell.solved { border-color: #22c55e; background: #0a2a0a; }
+.wc-cell.illegal { border-color: #ef4444; background: #2a0a0a; opacity: 0.5; }
+.wc-cell .wc-name { font-weight: 600; font-size: 0.95rem; }
+.wc-cell .wc-tier { color: #666; font-size: 0.7rem; margin-top: 0.25rem; }
+.wc-cell .wc-points { color: #f59e0b; font-size: 0.75rem; }
+
+.wc-examples {
+  background: #111; border: 1px solid #333; border-radius: 8px;
+  padding: 1rem; margin: 1rem 0;
+}
+.wc-examples h3 { color: #f59e0b; margin-bottom: 0.5rem; }
+.wc-example-list { list-style: none; }
+.wc-example-list li {
+  padding: 0.3rem 0; font-size: 0.95rem; color: #ccc;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+/* --- Buttons --- */
+button, .btn {
+  padding: 0.5rem 1rem;
+  background: #222; border: 1px solid #333; border-radius: 6px;
+  color: #ccc; font-size: 0.85rem; cursor: pointer;
+  transition: all 0.15s;
+}
+button:hover, .btn:hover { background: #333; border-color: #555; }
+button.primary { border-color: #f59e0b; color: #fff; }
+button.primary:hover { background: #f59e0b; color: #000; }
+button.correct { border-color: #22c55e; color: #22c55e; }
+button.correct:hover { background: #22c55e; color: #000; }
+button.wrong { border-color: #ef4444; color: #ef4444; }
+button.wrong:hover { background: #ef4444; color: #fff; }
+button.skip { border-color: #f59e0b; color: #f59e0b; }
+button.skip:hover { background: #f59e0b; color: #000; }
+button:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.btn-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 0.75rem 0; }
+
+/* Results */
+.result-badge {
+  display: inline-block; padding: 0.15rem 0.4rem;
+  border-radius: 3px; font-size: 0.7rem; font-weight: 600;
+}
+.result-badge.correct { background: #0a2a0a; color: #22c55e; }
+.result-badge.pass { background: #2a2000; color: #f59e0b; }
+.result-badge.illegal { background: #2a0a0a; color: #ef4444; }
+
+.hidden { display: none !important; }
+
+/* Section headers */
+.section-title {
+  color: #f59e0b; font-size: 1.1rem; font-weight: 700;
+  margin: 1rem 0 0.5rem; letter-spacing: 0.03em;
+}
+.section-subtitle { color: #888; font-size: 0.8rem; margin-bottom: 0.5rem; }
+
+/* Info strip */
+.info-strip {
+  display: flex; gap: 1.5rem; padding: 0.5rem 0;
+  font-size: 0.85rem; color: #aaa;
+}
+.info-strip strong { color: #fff; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>HACKER PYRAMID<span>Host Console</span></h1>
+  <div class="status-bar">
+    <span id="phase-label">lobby</span>
+    <span class="ws-dot" id="ws-dot"></span>
+    <span id="ws-text">connecting...</span>
+  </div>
+</header>
+
+<div class="container" id="app">
+  <!-- Lobby -->
+  <div id="lobby-view">
+    <div class="lobby">
+      <div class="lobby-section">
+        <h2>Teams</h2>
+        <div id="teams-container"></div>
+        <button onclick="addTeam()" id="add-team-btn" class="primary">+ Add Team</button>
+      </div>
+      <div class="lobby-section">
+        <h2>Categories (select 6)</h2>
+        <div class="btn-row">
+          <button onclick="randomCategories()" class="primary">Random 6</button>
+          <span id="cat-count" style="color:#888;font-size:0.85rem;line-height:2">0/6 selected</span>
+        </div>
+        <div id="cat-picker" class="cat-picker"></div>
+      </div>
+    </div>
+    <div class="btn-row" style="margin-top:1.5rem">
+      <button onclick="startGame()" class="primary" id="start-game-btn" disabled>Start Game</button>
+    </div>
+  </div>
+
+  <!-- Category Select -->
+  <div id="select-view" class="hidden">
+    <div class="game-grid">
+      <div class="game-left">
+        <div class="section-title">Pick a Category</div>
+        <div class="info-strip">
+          <span>Game <strong id="game-num">1</strong></span>
+          <span>Category <strong id="cat-pick-num">1</strong>/6</span>
+          <span>Playing: <strong id="active-team-name">--</strong></span>
+        </div>
+        <div id="pyramid-board" class="pyramid-board"></div>
+      </div>
+      <div class="game-right">
+        <div id="select-scoreboard" class="scoreboard"></div>
+        <div class="btn-row">
+          <button onclick="send({type:'end-game'})" class="wrong">End Game</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Playing a Category -->
+  <div id="play-view" class="hidden">
+    <div class="game-grid">
+      <div class="game-left">
+        <div class="section-title" id="play-cat-name">--</div>
+        <div class="info-strip">
+          <span>Clue-giver: <strong id="play-cluegiver">--</strong></span>
+          <span>Guesser: <strong id="play-guesser">--</strong></span>
+        </div>
+        <div class="timer-display" id="play-timer">30</div>
+        <div class="btn-row" style="justify-content:center">
+          <button onclick="send({type:'start-timer'})" class="primary" id="start-timer-btn">Start Timer</button>
+          <button onclick="send({type:'pause-timer'})" id="pause-timer-btn">Pause</button>
+          <button onclick="endCategory()" class="wrong">End Category</button>
+        </div>
+        <div id="word-list" class="word-list"></div>
+      </div>
+      <div class="game-right">
+        <div id="play-scoreboard" class="scoreboard"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category Result -->
+  <div id="result-view" class="hidden">
+    <div class="section-title" id="result-cat-name">--</div>
+    <div class="info-strip">
+      <span>Correct: <strong id="result-correct">0</strong>/7</span>
+    </div>
+    <div id="result-words" class="word-list"></div>
+    <div class="btn-row">
+      <button onclick="nextCategory()" class="primary">Next Category</button>
+    </div>
+  </div>
+
+  <!-- Game End -->
+  <div id="game-end-view" class="hidden">
+    <div class="section-title">Game Complete!</div>
+    <div id="game-end-scores" class="scoreboard" style="max-width:400px"></div>
+    <div class="btn-row">
+      <button onclick="startWinnersCircle()" class="primary">Winner's Circle</button>
+      <button onclick="send({type:'new-game'})" >New Game (Game 2)</button>
+      <button onclick="send({type:'end-game'})" class="wrong">End Show</button>
+    </div>
+  </div>
+
+  <!-- Winner's Circle Setup -->
+  <div id="wc-setup-view" class="hidden">
+    <div class="section-title">Winner's Circle</div>
+    <div class="info-strip">
+      <span>Team: <strong id="wc-team-name">--</strong></span>
+      <span id="wc-double" class="hidden" style="color:#f59e0b">DOUBLE POINTS!</span>
+    </div>
+    <div class="section-subtitle">Select WC Set:</div>
+    <div id="wc-set-picker" class="btn-row"></div>
+    <div class="section-subtitle" style="margin-top:1rem">Assign Roles:</div>
+    <div id="wc-role-picker"></div>
+    <div class="btn-row" style="margin-top:1rem">
+      <button onclick="send({type:'start-wc-timer'})" class="primary" id="start-wc-btn">Start (60s)</button>
+    </div>
+  </div>
+
+  <!-- Winner's Circle Playing -->
+  <div id="wc-play-view" class="hidden">
+    <div class="game-grid">
+      <div class="game-left">
+        <div class="section-title">Winner's Circle</div>
+        <div class="timer-display" id="wc-timer">60</div>
+        <div class="btn-row" style="justify-content:center">
+          <button onclick="send({type:'pause-wc-timer'})" id="pause-wc-btn">Pause</button>
+          <button onclick="send({type:'start-wc-timer'})" class="primary" id="resume-wc-btn">Resume</button>
+        </div>
+        <div id="wc-pyramid" class="wc-pyramid"></div>
+        <div id="wc-current-cat" class="wc-examples hidden">
+          <h3 id="wc-current-name">--</h3>
+          <ul id="wc-example-list" class="wc-example-list"></ul>
+          <div class="btn-row">
+            <button onclick="wcJudge('correct')" class="correct">Correct</button>
+            <button onclick="wcJudge('skip')" class="skip">Skip</button>
+            <button onclick="wcJudge('illegal')" class="wrong">Illegal Clue</button>
+          </div>
+        </div>
+      </div>
+      <div class="game-right">
+        <div class="scoreboard">
+          <div class="score-row">
+            <span class="team-name" style="color:#f59e0b">WC Score</span>
+            <span class="score" id="wc-score" style="color:#f59e0b">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Winner's Circle Complete -->
+  <div id="wc-complete-view" class="hidden">
+    <div class="section-title">Winner's Circle Complete!</div>
+    <div id="wc-final-pyramid" class="wc-pyramid"></div>
+    <div class="scoreboard" style="max-width:400px">
+      <div class="score-row">
+        <span class="team-name" style="color:#f59e0b">WC Score</span>
+        <span class="score" id="wc-final-score" style="color:#f59e0b">0</span>
+      </div>
+      <div class="score-row" id="wc-grand-prize" class="hidden">
+        <span class="team-name" style="color:#22c55e">GRAND PRIZE!</span>
+        <span class="score" style="color:#22c55e">+2000</span>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button onclick="send({type:'new-game'})" class="primary">New Game</button>
+      <button onclick="send({type:'end-game'})" class="wrong">End Show</button>
+      <button onclick="send({type:'full-reset'})">Full Reset</button>
+    </div>
+  </div>
+
+  <!-- Game Over -->
+  <div id="gameover-view" class="hidden">
+    <div class="section-title">Game Over</div>
+    <div id="final-scores" class="scoreboard" style="max-width:400px"></div>
+    <div class="btn-row">
+      <button onclick="send({type:'reset-game'})" class="primary">Reset (Keep Teams)</button>
+      <button onclick="send({type:'full-reset'})">Full Reset</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const WS_URL = `ws://${location.host}`;
+let ws = null;
+let state = null;
+let selectedCats = [];
+
+function connect() {
+  ws = new WebSocket(WS_URL);
+  ws.onopen = () => {
+    document.getElementById('ws-dot').classList.add('ok');
+    document.getElementById('ws-text').textContent = 'connected';
+    ws.send(JSON.stringify({ type: 'register-host' }));
+  };
+  ws.onmessage = (e) => {
+    const msg = JSON.parse(e.data);
+    if (msg.type === 'game-state') {
+      state = msg.state;
+      render();
+    } else if (msg.type === 'error') {
+      alert(msg.message);
+    }
+  };
+  ws.onclose = () => {
+    document.getElementById('ws-dot').classList.remove('ok');
+    document.getElementById('ws-text').textContent = 'disconnected';
+    setTimeout(connect, 2000);
+  };
+  ws.onerror = () => ws.close();
+}
+
+function send(msg) {
+  if (ws && ws.readyState === 1) ws.send(JSON.stringify(msg));
+}
+
+// --- Rendering ---
+
+function render() {
+  if (!state) return;
+  const phase = state.phase;
+  document.getElementById('phase-label').textContent = phase;
+
+  // Hide all views
+  const views = ['lobby-view','select-view','play-view','result-view',
+    'game-end-view','wc-setup-view','wc-play-view','wc-complete-view','gameover-view'];
+  views.forEach(v => document.getElementById(v).classList.add('hidden'));
+
+  if (phase === 'lobby') {
+    renderLobby();
+  } else if (phase === 'category_select') {
+    renderCategorySelect();
+  } else if (phase === 'category_ready' || phase === 'playing') {
+    renderPlaying();
+  } else if (phase === 'category_result') {
+    renderCategoryResult();
+  } else if (phase === 'game_end') {
+    renderGameEnd();
+  } else if (phase === 'wc_setup') {
+    renderWCSetup();
+  } else if (phase === 'wc_playing') {
+    renderWCPlaying();
+  } else if (phase === 'wc_complete') {
+    renderWCComplete();
+  } else if (phase === 'game_over') {
+    renderGameOver();
+  }
+}
+
+function renderLobby() {
+  document.getElementById('lobby-view').classList.remove('hidden');
+
+  // Teams
+  const tc = document.getElementById('teams-container');
+  tc.innerHTML = state.teams.map((t, i) => `
+    <div class="team-card team-${i}">
+      <h3>${esc(t.name)}
+        <button style="float:right;font-size:0.7rem;padding:0.2rem 0.5rem" onclick="send({type:'remove-team',teamId:${t.id}})">Remove</button>
+      </h3>
+      <div class="team-players">
+        ${t.players.map(p => `
+          <div class="team-player">
+            <span>${esc(p.name)}</span>
+            <span class="role">${p.role || 'unassigned'}</span>
+          </div>
+        `).join('')}
+      </div>
+      <div class="add-row">
+        <input type="text" placeholder="Player name" id="player-input-${t.id}" onkeydown="if(event.key==='Enter')addPlayer(${t.id})">
+        <button onclick="addPlayer(${t.id})">Add</button>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('add-team-btn').disabled = state.teams.length >= 2;
+
+  // Category picker
+  if (state.availableCategories) {
+    const picker = document.getElementById('cat-picker');
+    picker.innerHTML = state.availableCategories.map(c => {
+      const sel = selectedCats.includes(c.name);
+      return `<div class="cat-chip ${sel ? 'selected' : ''}" onclick="toggleCat('${esc(c.name)}')">
+        ${esc(c.name)}<span class="diff">${c.difficulty}</span>
+      </div>`;
+    }).join('');
+    document.getElementById('cat-count').textContent = `${selectedCats.length}/6 selected`;
+  }
+
+  const canStart = state.teams.length === 2 &&
+    state.teams.every(t => t.players.length >= 2) &&
+    (selectedCats.length === 6 || state.mainGame.categories.length === 6);
+  document.getElementById('start-game-btn').disabled = !canStart;
+}
+
+function renderCategorySelect() {
+  document.getElementById('select-view').classList.remove('hidden');
+  document.getElementById('game-num').textContent = state.gameNumber;
+  document.getElementById('cat-pick-num').textContent = (state.mainGame.categoryPicks + 1);
+  document.getElementById('active-team-name').textContent =
+    state.teams[state.mainGame.activeTeam]?.name || '--';
+
+  // Pyramid board (3-2-1 layout)
+  const cats = state.mainGame.categories;
+  const board = document.getElementById('pyramid-board');
+  const rows = [[0, 1, 2], [3, 4], [5]]; // bottom, middle, top
+  board.innerHTML = rows.reverse().map(row => `
+    <div class="pyramid-row">
+      ${row.map(i => {
+        if (i >= cats.length) return '';
+        const c = cats[i];
+        return `<div class="pyramid-cell ${c.played ? 'played' : ''}"
+          onclick="${c.played ? '' : `pickCategory(${i})`}">
+          ${esc(c.name)}<br><span style="font-size:0.7rem;color:#666">${c.difficulty}</span>
+        </div>`;
+      }).join('')}
+    </div>
+  `).join('');
+
+  document.getElementById('select-scoreboard').innerHTML = renderScoreboardHTML();
+}
+
+function renderPlaying() {
+  document.getElementById('play-view').classList.remove('hidden');
+  const mg = state.mainGame;
+  const cat = mg.categories[mg.currentCategory];
+
+  document.getElementById('play-cat-name').textContent = cat ? cat.name : '--';
+
+  // Clue-giver / guesser names
+  const activeTeam = state.teams[mg.activeTeam];
+  if (activeTeam) {
+    const cg = activeTeam.players.find(p => p.id === mg.clueGiver);
+    const gs = activeTeam.players.find(p => p.id === mg.guesser);
+    document.getElementById('play-cluegiver').textContent = cg ? cg.name : '--';
+    document.getElementById('play-guesser').textContent = gs ? gs.name : '--';
+  }
+
+  // Timer
+  const timer = document.getElementById('play-timer');
+  timer.textContent = mg.timeRemaining;
+  timer.className = 'timer-display' +
+    (mg.timeRemaining <= 5 ? ' danger' : mg.timeRemaining <= 10 ? ' warning' : '');
+
+  document.getElementById('start-timer-btn').disabled = mg.timerRunning;
+  document.getElementById('pause-timer-btn').disabled = !mg.timerRunning;
+
+  // Word list
+  const words = mg.words || [];
+  const wl = document.getElementById('word-list');
+  wl.innerHTML = words.map((w, i) => {
+    const result = mg.wordResults[i];
+    const isCurrent = i === mg.currentWordIndex && !result;
+    return `<div class="word-item ${isCurrent ? 'current' : ''}">
+      <span class="word-text">${esc(w)}</span>
+      ${result ? `<span class="result-badge ${result}">${result}</span>` :
+        `<div class="word-actions">
+          <button class="correct" onclick="judgeWord(${i},'correct')" ${!mg.timerRunning ? 'disabled' : ''}>&#10003;</button>
+          <button class="skip" onclick="judgeWord(${i},'pass')" ${!mg.timerRunning ? 'disabled' : ''}>Pass</button>
+          <button class="wrong" onclick="judgeWord(${i},'illegal')" ${!mg.timerRunning ? 'disabled' : ''}>Illegal</button>
+        </div>`}
+    </div>`;
+  }).join('');
+
+  document.getElementById('play-scoreboard').innerHTML = renderScoreboardHTML();
+}
+
+function renderCategoryResult() {
+  document.getElementById('result-view').classList.remove('hidden');
+  const mg = state.mainGame;
+  const cat = mg.categories[mg.currentCategory];
+  document.getElementById('result-cat-name').textContent = cat ? cat.name : '--';
+
+  const correct = mg.wordResults.filter(r => r === 'correct').length;
+  document.getElementById('result-correct').textContent = correct;
+
+  const words = mg.words || [];
+  document.getElementById('result-words').innerHTML = words.map((w, i) => {
+    const result = mg.wordResults[i] || 'unanswered';
+    return `<div class="word-item">
+      <span class="word-text">${esc(w)}</span>
+      <span class="result-badge ${result}">${result}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderGameEnd() {
+  document.getElementById('game-end-view').classList.remove('hidden');
+  document.getElementById('game-end-scores').innerHTML = renderScoreboardHTML(true);
+}
+
+function renderWCSetup() {
+  document.getElementById('wc-setup-view').classList.remove('hidden');
+  const wc = state.winnersCircle;
+  const team = state.teams[wc.team];
+  document.getElementById('wc-team-name').textContent = team ? team.name : '--';
+  if (wc.doublePoints) document.getElementById('wc-double').classList.remove('hidden');
+  else document.getElementById('wc-double').classList.add('hidden');
+
+  // WC set picker
+  if (state.availableWCSets) {
+    document.getElementById('wc-set-picker').innerHTML =
+      state.availableWCSets.map(s => `<button onclick="selectWCSet('${esc(s)}')">${esc(s)}</button>`).join('');
+  }
+
+  // Role picker
+  if (team) {
+    document.getElementById('wc-role-picker').innerHTML = team.players.map(p =>
+      `<div style="margin:0.25rem 0">
+        <span>${esc(p.name)}</span>
+        <button onclick="setWCRole(${p.id},'clue-giver')" class="${wc.clueGiver===p.id?'primary':''}">Clue-giver</button>
+        <button onclick="setWCRole(${p.id},'guesser')" class="${wc.guesser===p.id?'primary':''}">Guesser</button>
+      </div>`
+    ).join('');
+  }
+}
+
+function renderWCPlaying() {
+  document.getElementById('wc-play-view').classList.remove('hidden');
+  const wc = state.winnersCircle;
+
+  // Timer
+  const timer = document.getElementById('wc-timer');
+  timer.textContent = wc.timeRemaining;
+  timer.className = 'timer-display' +
+    (wc.timeRemaining <= 10 ? ' danger' : wc.timeRemaining <= 20 ? ' warning' : '');
+
+  document.getElementById('pause-wc-btn').disabled = !wc.timerRunning;
+  document.getElementById('resume-wc-btn').disabled = wc.timerRunning;
+
+  // WC Pyramid (3-2-1)
+  const cats = wc.categories;
+  const indices = [[0, 1, 2], [3, 4], [5]];
+  document.getElementById('wc-pyramid').innerHTML = indices.reverse().map(row => `
+    <div class="wc-row">
+      ${row.map(i => {
+        if (i >= cats.length) return '';
+        const c = cats[i];
+        const pts = c.tier === 'bottom' ? 100 : c.tier === 'middle' ? 250 : 500;
+        return `<div class="wc-cell ${c.status} ${wc.currentCategory === i ? 'current' : ''}"
+          onclick="send({type:'wc-select-category',categoryIndex:${i}})">
+          <div class="wc-name">${esc(c.name)}</div>
+          <div class="wc-tier">${c.tier}</div>
+          <div class="wc-points">${pts} pts</div>
+        </div>`;
+      }).join('')}
+    </div>
+  `).join('');
+
+  // Current category details (for host)
+  const curCat = cats[wc.currentCategory];
+  if (curCat && curCat.examples) {
+    document.getElementById('wc-current-cat').classList.remove('hidden');
+    document.getElementById('wc-current-name').textContent = curCat.name;
+    document.getElementById('wc-example-list').innerHTML =
+      curCat.examples.map(ex => `<li>${esc(ex)}</li>`).join('');
+  } else {
+    document.getElementById('wc-current-cat').classList.add('hidden');
+  }
+
+  document.getElementById('wc-score').textContent = wc.score;
+}
+
+function renderWCComplete() {
+  document.getElementById('wc-complete-view').classList.remove('hidden');
+  const wc = state.winnersCircle;
+
+  // Final pyramid
+  const cats = wc.categories;
+  const indices = [[0, 1, 2], [3, 4], [5]];
+  document.getElementById('wc-final-pyramid').innerHTML = indices.reverse().map(row => `
+    <div class="wc-row">
+      ${row.map(i => {
+        if (i >= cats.length) return '';
+        const c = cats[i];
+        return `<div class="wc-cell ${c.status}">
+          <div class="wc-name">${esc(c.name)}</div>
+          <div class="wc-tier">${c.tier}</div>
+        </div>`;
+      }).join('')}
+    </div>
+  `).join('');
+
+  document.getElementById('wc-final-score').textContent = wc.score;
+  const gp = document.getElementById('wc-grand-prize');
+  if (wc.solved.length === 6) gp.classList.remove('hidden');
+  else gp.classList.add('hidden');
+}
+
+function renderGameOver() {
+  document.getElementById('gameover-view').classList.remove('hidden');
+  document.getElementById('final-scores').innerHTML = renderScoreboardHTML(true);
+}
+
+function renderScoreboardHTML(total) {
+  if (!state) return '';
+  const mg = state.mainGame;
+  return state.teams.map((t, i) => `
+    <div class="score-row team-${i} ${mg.activeTeam === i ? 'active' : ''}">
+      <span class="team-name">${esc(t.name)}</span>
+      <span class="score">${total ? t.score : mg.scores[i]}</span>
+      <div class="score-adjust">
+        <button onclick="adjustScore(${t.id},-1)">-1</button>
+        <button onclick="adjustScore(${t.id},1)">+1</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// --- Actions ---
+
+function addTeam() {
+  const name = prompt('Team name:');
+  if (name) send({ type: 'add-team', name });
+}
+
+function addPlayer(teamId) {
+  const input = document.getElementById(`player-input-${teamId}`);
+  const name = input.value.trim();
+  if (name) {
+    send({ type: 'add-player-to-team', teamId, playerName: name });
+    input.value = '';
+  }
+}
+
+function toggleCat(name) {
+  const idx = selectedCats.indexOf(name);
+  if (idx >= 0) selectedCats.splice(idx, 1);
+  else if (selectedCats.length < 6) selectedCats.push(name);
+  render();
+}
+
+function randomCategories() {
+  send({ type: 'random-categories' });
+  selectedCats = [];
+}
+
+function startGame() {
+  if (selectedCats.length === 6) {
+    send({ type: 'select-categories', categoryNames: selectedCats });
+  }
+  send({ type: 'start-game' });
+}
+
+function pickCategory(idx) {
+  send({ type: 'pick-category', categoryIndex: idx });
+}
+
+function judgeWord(idx, result) {
+  send({ type: 'judge-word', wordIndex: idx, result });
+}
+
+function endCategory() {
+  send({ type: 'end-category' });
+}
+
+function nextCategory() {
+  send({ type: 'next-category' });
+}
+
+function startWinnersCircle() {
+  send({ type: 'start-winners-circle' });
+}
+
+function selectWCSet(name) {
+  send({ type: 'start-winners-circle', setName: name });
+}
+
+function setWCRole(playerId, role) {
+  if (role === 'clue-giver') {
+    const wc = state.winnersCircle;
+    const team = state.teams[wc.team];
+    const other = team.players.find(p => p.id !== playerId);
+    send({ type: 'set-wc-roles', clueGiver: playerId, guesser: other ? other.id : null });
+  } else {
+    const wc = state.winnersCircle;
+    const team = state.teams[wc.team];
+    const other = team.players.find(p => p.id !== playerId);
+    send({ type: 'set-wc-roles', clueGiver: other ? other.id : null, guesser: playerId });
+  }
+}
+
+function wcJudge(result) {
+  send({ type: 'wc-judge', result });
+}
+
+function adjustScore(teamId, amount) {
+  send({ type: 'adjust-score', teamId, amount });
+}
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// --- Keyboard shortcuts ---
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (!state) return;
+
+  if (state.phase === 'playing') {
+    if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      // Correct current word
+      const mg = state.mainGame;
+      if (mg.currentWordIndex < mg.wordResults.length && !mg.wordResults[mg.currentWordIndex]) {
+        judgeWord(mg.currentWordIndex, 'correct');
+      }
+    } else if (e.key === 'p' || e.key === 'P') {
+      const mg = state.mainGame;
+      if (mg.currentWordIndex < mg.wordResults.length && !mg.wordResults[mg.currentWordIndex]) {
+        judgeWord(mg.currentWordIndex, 'pass');
+      }
+    } else if (e.key === 'x' || e.key === 'X') {
+      const mg = state.mainGame;
+      if (mg.currentWordIndex < mg.wordResults.length && !mg.wordResults[mg.currentWordIndex]) {
+        judgeWord(mg.currentWordIndex, 'illegal');
+      }
+    }
+  }
+
+  if (state.phase === 'wc_playing') {
+    if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      wcJudge('correct');
+    } else if (e.key === 's' || e.key === 'S') {
+      wcJudge('skip');
+    } else if (e.key === 'x' || e.key === 'X') {
+      wcJudge('illegal');
+    }
+  }
+});
+
+connect();
+</script>
+</body>
+</html>

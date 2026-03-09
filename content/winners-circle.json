@@ -1,0 +1,425 @@
+{
+  "description": "Hacker Pyramid Winner's Circle categories. The clue-giver lists examples and the guesser must identify the common category. Organized in sets of 6 (3 bottom/easy, 2 middle/medium, 1 top/hard) for pyramid arrangement.",
+  "sets": [
+    {
+      "name": "Set A",
+      "categories": [
+        {
+          "name": "Things that get brute-forced",
+          "tier": "bottom",
+          "examples": ["passwords", "locks", "ZIP files", "Wi-Fi networks", "PINs", "safes", "login pages"]
+        },
+        {
+          "name": "Things with keys",
+          "tier": "bottom",
+          "examples": ["SSH", "encryption", "keyboards", "pianos", "maps", "registries", "car ignitions"]
+        },
+        {
+          "name": "Things that get spoofed",
+          "tier": "bottom",
+          "examples": ["IP addresses", "caller ID", "email headers", "GPS signals", "MAC addresses", "DNS responses", "ARP tables"]
+        },
+        {
+          "name": "Things that overflow",
+          "tier": "middle",
+          "examples": ["buffers", "stacks", "bathtubs", "rivers", "integer variables", "inboxes", "toilets"]
+        },
+        {
+          "name": "Things with shells",
+          "tier": "middle",
+          "examples": ["turtles", "eggs", "Linux terminals", "shellcode", "oysters", "ammunition", "lobsters"]
+        },
+        {
+          "name": "Things you reverse engineer",
+          "tier": "top",
+          "examples": ["malware", "firmware", "protocols", "binaries", "APIs", "obfuscated code", "circuit boards"]
+        }
+      ]
+    },
+    {
+      "name": "Set B",
+      "categories": [
+        {
+          "name": "Things with worms",
+          "tier": "bottom",
+          "examples": ["gardens", "apples", "networks", "tequila", "Morris", "Conficker", "fishing bait"]
+        },
+        {
+          "name": "Things you crack",
+          "tier": "bottom",
+          "examples": ["passwords", "safes", "eggs", "knuckles", "codes", "jokes", "WPA handshakes"]
+        },
+        {
+          "name": "Things with patches",
+          "tier": "bottom",
+          "examples": ["software", "quilts", "pirates", "pumpkins", "vulnerabilities", "jackets", "drywall"]
+        },
+        {
+          "name": "Things that get dumped",
+          "tier": "middle",
+          "examples": ["databases", "memory", "credentials", "core files", "partners", "stocks", "trash"]
+        },
+        {
+          "name": "Things that get elevated",
+          "tier": "middle",
+          "examples": ["privileges", "elevators", "blood pressure", "conversations", "threats", "trains", "tickets"]
+        },
+        {
+          "name": "Things with exploits",
+          "tier": "top",
+          "examples": ["browsers", "kernels", "workers", "video games", "zero-days", "the wealthy", "routers"]
+        }
+      ]
+    },
+    {
+      "name": "Set C",
+      "categories": [
+        {
+          "name": "Things that get scanned",
+          "tier": "bottom",
+          "examples": ["ports", "barcodes", "documents", "groceries", "QR codes", "networks", "boarding passes"]
+        },
+        {
+          "name": "Things that get injected",
+          "tier": "bottom",
+          "examples": ["SQL", "vaccines", "JavaScript", "dependencies", "insulin", "commands", "marinade"]
+        },
+        {
+          "name": "Things with tokens",
+          "tier": "bottom",
+          "examples": ["arcades", "authentication", "subways", "APIs", "casinos", "OAuth", "vending machines"]
+        },
+        {
+          "name": "Things you sniff",
+          "tier": "middle",
+          "examples": ["packets", "flowers", "wine", "network traffic", "glue", "Wi-Fi", "candles"]
+        },
+        {
+          "name": "Things that get forked",
+          "tier": "middle",
+          "examples": ["repositories", "processes", "roads", "Bitcoin", "spaghetti", "tongues", "lightning"]
+        },
+        {
+          "name": "Things with handshakes",
+          "tier": "top",
+          "examples": ["TCP", "TLS", "politicians", "business meetings", "Wi-Fi", "secret societies", "diplomats"]
+        }
+      ]
+    },
+    {
+      "name": "Set D",
+      "categories": [
+        {
+          "name": "Things that get hashed",
+          "tier": "bottom",
+          "examples": ["passwords", "potatoes", "browns", "files", "marijuana", "checksums", "corned beef"]
+        },
+        {
+          "name": "Things with roots",
+          "tier": "bottom",
+          "examples": ["trees", "Linux", "teeth", "hair", "root kits", "math equations", "beer"]
+        },
+        {
+          "name": "Things you ping",
+          "tier": "bottom",
+          "examples": ["servers", "Slack messages", "ping pong balls", "sonar", "colleagues", "websites", "satellites"]
+        },
+        {
+          "name": "Things that expire",
+          "tier": "middle",
+          "examples": ["certificates", "milk", "sessions", "passwords", "coupons", "drivers licenses", "domain names"]
+        },
+        {
+          "name": "Things that are sandboxed",
+          "tier": "middle",
+          "examples": ["malware", "children", "browsers", "cats", "mobile apps", "JavaScript", "beach volleyball courts"]
+        },
+        {
+          "name": "Things with daemons",
+          "tier": "top",
+          "examples": ["Linux servers", "horror movies", "Greek mythology", "laundry detergent", "exorcisms", "cron jobs", "Maxwell"]
+        }
+      ]
+    },
+    {
+      "name": "Set E",
+      "categories": [
+        {
+          "name": "Things that get spoofed",
+          "tier": "bottom",
+          "examples": ["emails", "phone numbers", "websites", "movies", "MAC addresses", "Saturday Night Live", "DNS"]
+        },
+        {
+          "name": "Things with ports",
+          "tier": "bottom",
+          "examples": ["ships", "computers", "wine", "airports", "USB", "storms", "networking"]
+        },
+        {
+          "name": "Things that are encrypted",
+          "tier": "bottom",
+          "examples": ["messages", "hard drives", "WhatsApp", "passwords", "love letters", "VPN traffic", "iPhones"]
+        },
+        {
+          "name": "Things with tunnels",
+          "tier": "middle",
+          "examples": ["SSH", "VPNs", "trains", "moles", "Tor", "mountains", "carpal"]
+        },
+        {
+          "name": "Things that crawl",
+          "tier": "middle",
+          "examples": ["spiders", "babies", "web scrapers", "Google bots", "insects", "dungeon crawlers", "pub crawls"]
+        },
+        {
+          "name": "Things with signatures",
+          "tier": "top",
+          "examples": ["digital certificates", "contracts", "autographs", "malware", "IDS rules", "emails", "paintings"]
+        }
+      ]
+    },
+    {
+      "name": "Set F",
+      "categories": [
+        {
+          "name": "Things that leak",
+          "tier": "bottom",
+          "examples": ["memory", "faucets", "credentials", "classified documents", "roofs", "pipes", "secrets"]
+        },
+        {
+          "name": "Things with bugs",
+          "tier": "bottom",
+          "examples": ["software", "gardens", "hotel rooms", "Volkswagens", "wiretaps", "windshields", "code reviews"]
+        },
+        {
+          "name": "Things you spoof",
+          "tier": "bottom",
+          "examples": ["caller ID", "IP addresses", "GPS", "email from addresses", "MAC addresses", "horror movies", "ARP"]
+        },
+        {
+          "name": "Things that get chained",
+          "tier": "middle",
+          "examples": ["exploits", "bicycles", "certificates", "prisoners", "daisy chains", "supply chains", "blockchain"]
+        },
+        {
+          "name": "Things with payloads",
+          "tier": "middle",
+          "examples": ["rockets", "exploits", "trucks", "Metasploit", "missiles", "HTTP requests", "delivery drones"]
+        },
+        {
+          "name": "Things that pivot",
+          "tier": "top",
+          "examples": ["basketball players", "hackers inside networks", "startups", "Excel tables", "dancers", "doors", "business strategies"]
+        }
+      ]
+    },
+    {
+      "name": "Set G",
+      "categories": [
+        {
+          "name": "Things with masks",
+          "tier": "bottom",
+          "examples": ["subnet masks", "Halloween", "surgeons", "robbers", "Zorro", "welders", "masquerade balls"]
+        },
+        {
+          "name": "Things that are poisoned",
+          "tier": "bottom",
+          "examples": ["DNS cache", "apples", "ARP tables", "water wells", "machine learning data", "relationships", "chalices"]
+        },
+        {
+          "name": "Things with logs",
+          "tier": "bottom",
+          "examples": ["fireplaces", "servers", "cabins", "lumberjacks", "SIEM", "captain's journals", "Yule"]
+        },
+        {
+          "name": "Things that get spooned",
+          "tier": "middle",
+          "examples": ["soup", "ice cream", "packets", "lovers", "cereal", "medicine", "babies"]
+        },
+        {
+          "name": "Things with honey",
+          "tier": "middle",
+          "examples": ["honeypots", "bees", "bears", "traps", "badgers", "toast", "Winnie the Pooh"]
+        },
+        {
+          "name": "Things that are deprecated",
+          "tier": "top",
+          "examples": ["APIs", "Flash Player", "Internet Explorer", "slang", "fashion trends", "TLS 1.0", "your opinions"]
+        }
+      ]
+    },
+    {
+      "name": "Set H",
+      "categories": [
+        {
+          "name": "Things you enumerate",
+          "tier": "bottom",
+          "examples": ["users", "subdomains", "census data", "directories", "inventory", "ports", "species"]
+        },
+        {
+          "name": "Things with threads",
+          "tier": "bottom",
+          "examples": ["CPUs", "needles", "Twitter", "Reddit", "clothing", "conversations", "screws"]
+        },
+        {
+          "name": "Things that are hardened",
+          "tier": "bottom",
+          "examples": ["servers", "steel", "criminals", "arteries", "concrete", "Linux systems", "negotiating positions"]
+        },
+        {
+          "name": "Things with layers",
+          "tier": "middle",
+          "examples": ["OSI model", "onions", "cakes", "ogres", "neural networks", "Photoshop", "defense in depth"]
+        },
+        {
+          "name": "Things that time out",
+          "tier": "middle",
+          "examples": ["sessions", "children", "DNS queries", "parking meters", "connections", "NBA coaches", "patience"]
+        },
+        {
+          "name": "Things with zero days",
+          "tier": "top",
+          "examples": ["software vulnerabilities", "new jobs", "product launches", "wars", "diets", "exploit brokers", "sobriety"]
+        }
+      ]
+    },
+    {
+      "name": "Set I",
+      "categories": [
+        {
+          "name": "Things that are spoofed",
+          "tier": "bottom",
+          "examples": ["GPS signals", "fingerprints", "emails", "websites", "phone numbers", "badges", "MAC addresses"]
+        },
+        {
+          "name": "Things with tables",
+          "tier": "bottom",
+          "examples": ["databases", "dining rooms", "routing", "pool halls", "ARP", "multiplication", "HTML"]
+        },
+        {
+          "name": "Things you whitelist",
+          "tier": "bottom",
+          "examples": ["IP addresses", "applications", "email senders", "wedding guests", "domains", "VIP clubs", "file extensions"]
+        },
+        {
+          "name": "Things with caches",
+          "tier": "middle",
+          "examples": ["browsers", "CPUs", "geocaching", "DNS", "pirates", "squirrels", "CDNs"]
+        },
+        {
+          "name": "Things that are obfuscated",
+          "tier": "middle",
+          "examples": ["JavaScript", "tax returns", "malware", "legal contracts", "variable names", "political answers", "URLs"]
+        },
+        {
+          "name": "Things with back doors",
+          "tier": "top",
+          "examples": ["software", "houses", "encryption", "restaurants", "routers", "theaters", "governments"]
+        }
+      ]
+    },
+    {
+      "name": "Set J",
+      "categories": [
+        {
+          "name": "Things with domains",
+          "tier": "bottom",
+          "examples": ["websites", "Active Directory", "kingdoms", "math functions", "email addresses", "real estate", "expertise"]
+        },
+        {
+          "name": "Things that get blocked",
+          "tier": "bottom",
+          "examples": ["firewalls", "roads", "ads", "phone numbers", "arteries", "shots in basketball", "toilets"]
+        },
+        {
+          "name": "Things with kernels",
+          "tier": "bottom",
+          "examples": ["Linux", "popcorn", "corn", "operating systems", "machine learning", "wheat", "FreeBSD"]
+        },
+        {
+          "name": "Things that replicate",
+          "tier": "middle",
+          "examples": ["viruses", "DNA", "worms", "bacteria", "databases", "memes", "cells"]
+        },
+        {
+          "name": "Things that get wrapped",
+          "tier": "middle",
+          "examples": ["presents", "API calls", "burritos", "functions", "injuries", "text", "encryption layers"]
+        },
+        {
+          "name": "Things with ghosts",
+          "tier": "top",
+          "examples": ["Pac-Man", "Spectre vulnerability", "haunted houses", "Ghost in the Shell", "ghostwriters", "ghost networks", "Halloween"]
+        }
+      ]
+    },
+    {
+      "name": "Set K",
+      "categories": [
+        {
+          "name": "Things that get cloned",
+          "tier": "bottom",
+          "examples": ["git repos", "sheep", "phones", "credit cards", "Star Wars troopers", "hard drives", "phishing sites"]
+        },
+        {
+          "name": "Things with traps",
+          "tier": "bottom",
+          "examples": ["SNMP", "mouse traps", "Star Wars", "bear traps", "honeypots", "speed traps", "Indiana Jones"]
+        },
+        {
+          "name": "Things that are sticky",
+          "tier": "bottom",
+          "examples": ["bits", "notes", "tape", "sessions", "fingers", "situations", "toffee"]
+        },
+        {
+          "name": "Things with sockets",
+          "tier": "middle",
+          "examples": ["network programming", "electrical outlets", "wrenches", "WebSockets", "eye sockets", "CPU slots", "light bulbs"]
+        },
+        {
+          "name": "Things you exfiltrate",
+          "tier": "middle",
+          "examples": ["data", "hostages", "secrets", "credentials", "spies", "source code", "prisoners of war"]
+        },
+        {
+          "name": "Things with rainbow",
+          "tier": "top",
+          "examples": ["tables", "flags", "trout", "bridges", "Skittles", "Six Siege", "coalition logos"]
+        }
+      ]
+    },
+    {
+      "name": "Set L",
+      "categories": [
+        {
+          "name": "Things that get fuzzed",
+          "tier": "bottom",
+          "examples": ["inputs", "APIs", "peaches", "tennis balls", "file parsers", "protocols", "microphones"]
+        },
+        {
+          "name": "Things with firewalls",
+          "tier": "bottom",
+          "examples": ["networks", "cars", "buildings", "China", "Windows", "apartments", "pfsense"]
+        },
+        {
+          "name": "Things with vectors",
+          "tier": "bottom",
+          "examples": ["attacks", "math", "graphics", "diseases", "physics", "despicable me", "word embeddings"]
+        },
+        {
+          "name": "Things that get hijacked",
+          "tier": "middle",
+          "examples": ["sessions", "planes", "DNS", "browsers", "trucks", "conversations", "BGP routes"]
+        },
+        {
+          "name": "Things with zombies",
+          "tier": "middle",
+          "examples": ["botnets", "movies", "processes", "video games", "Halloween", "The Walking Dead", "cocktails"]
+        },
+        {
+          "name": "Things that are air-gapped",
+          "tier": "top",
+          "examples": ["classified networks", "nuclear facilities", "Faraday cages", "island nations", "voting machines", "SCADA systems", "submarines"]
+        }
+      ]
+    }
+  ]
+}
