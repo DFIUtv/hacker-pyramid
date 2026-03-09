@@ -145,9 +145,9 @@
       "name": "Set E",
       "categories": [
         {
-          "name": "Things that get spoofed",
+          "name": "Things that get throttled",
           "tier": "bottom",
-          "examples": ["emails", "phone numbers", "websites", "movies", "MAC addresses", "Saturday Night Live", "DNS"]
+          "examples": ["bandwidth", "API requests", "race cars", "ISP speeds", "login attempts", "engines", "streaming video"]
         },
         {
           "name": "Things with ports",
@@ -285,9 +285,9 @@
       "name": "Set I",
       "categories": [
         {
-          "name": "Things that are spoofed",
+          "name": "Things that get rooted",
           "tier": "bottom",
-          "examples": ["GPS signals", "fingerprints", "emails", "websites", "phone numbers", "badges", "MAC addresses"]
+          "examples": ["Android phones", "trees", "servers", "jailbroken devices", "teeth", "plants", "Linux boxes"]
         },
         {
           "name": "Things with tables",

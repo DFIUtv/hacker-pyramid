@@ -84,7 +84,7 @@
     {
       "name": "Blue Screen of Death",
       "difficulty": "medium",
-      "words": ["IRQL_NOT_LESS_OR_EQUAL", "PAGE_FAULT", "KERNEL_DATA_INPAGE_ERROR", "DRIVER_IRQL", "CRITICAL_PROCESS_DIED", "SYSTEM_SERVICE_EXCEPTION", "BAD_POOL_HEADER"]
+      "words": ["bad driver", "overheating", "corrupted registry", "faulty RAM", "disk failure", "Windows Update", "power surge"]
     },
     {
       "name": "The Dark Side",
@@ -129,7 +129,7 @@
     {
       "name": "RFC YOLO",
       "difficulty": "hard",
-      "words": ["RFC 1149", "RFC 2549", "RFC 2324", "RFC 7168", "RFC 8140", "RFC 1925", "RFC 3514"]
+      "words": ["IP over avian carriers", "carrier pigeons with QoS", "Hyper Text Coffee Pot", "tea-capable teapot", "ASCII art in packets", "twelve networking truths", "evil bit"]
     },
     {
       "name": "The OSI Cocktail Party",

@@ -279,15 +279,14 @@ function sanitizeState(g, clientInfo) {
     scores: g.mainGame.scores,
   };
 
-  // Host and clue-giver see the words
+  // Host and clue-giver see the words; board/guesser/spectators see masked
   const cat = g.mainGame.categories[g.mainGame.currentCategory];
   if (cat && cat.words) {
-    if (clientInfo.role === 'host' || clientInfo.role === 'board') {
-      s.mainGame.words = cat.words;
-    } else if (clientInfo.role === 'clue-giver') {
+    const isClueGiver = clientInfo.playerId && clientInfo.playerId === g.mainGame.clueGiver;
+    if (clientInfo.role === 'host' || isClueGiver) {
       s.mainGame.words = cat.words;
     } else {
-      // Guesser and spectators don't see words
+      // Board, guesser, and spectators don't see words
       s.mainGame.words = cat.words.map((w, i) =>
         g.mainGame.wordResults[i] === 'correct' ? w : '???'
       );
@@ -297,9 +296,10 @@ function sanitizeState(g, clientInfo) {
   // Winner's Circle
   s.winnersCircle = {
     categories: g.winnersCircle.categories.map((c, i) => {
+      const isWCClueGiver = clientInfo.playerId && clientInfo.playerId === g.winnersCircle.clueGiver;
       const base = {
         name: (clientInfo.role === 'host' || clientInfo.role === 'board' ||
-               clientInfo.role === 'clue-giver' ||
+               isWCClueGiver ||
                g.winnersCircle.solved.includes(i) ||
                g.winnersCircle.illegal.includes(i)) ? c.name : '???',
         tier: c.tier,
@@ -307,7 +307,7 @@ function sanitizeState(g, clientInfo) {
                 g.winnersCircle.illegal.includes(i) ? 'illegal' : 'pending',
       };
       // Host and clue-giver see examples
-      if (clientInfo.role === 'host' || clientInfo.role === 'clue-giver') {
+      if (clientInfo.role === 'host' || isWCClueGiver) {
         base.examples = c.examples;
       }
       return base;
@@ -367,6 +367,7 @@ function handleMessage(ws, msg) {
 
     case 'register-player': {
       info.role = 'player';
+      if (msg.playerId) info.playerId = msg.playerId;
       sendTo(ws, { type: 'registered', role: 'player' });
       sendTo(ws, { type: 'game-state', state: sanitizeState(game, info) });
       break;
@@ -576,10 +577,13 @@ function handleMessage(ws, msg) {
 
     case 'end-category': {
       if (info.role !== 'host') return;
-      // Force end current category
+      // Force end current category (only score if still playing — timer/judge may have already scored)
+      const wasPlaying = game.phase === 'playing' || game.phase === 'category_ready';
       stopMainTimer();
-      const correct = game.mainGame.wordResults.filter(r => r === 'correct').length;
-      game.mainGame.scores[game.mainGame.activeTeam] += correct;
+      if (wasPlaying) {
+        const correct = game.mainGame.wordResults.filter(r => r === 'correct').length;
+        game.mainGame.scores[game.mainGame.activeTeam] += correct;
+      }
       game.mainGame.categoryPicks++;
       game.usedCategories.push(game.mainGame.categories[game.mainGame.currentCategory]?.name);
 
@@ -767,6 +771,7 @@ function handleMessage(ws, msg) {
       game.mainGame.timeRemaining = 30;
       game.mainGame.categoryPicks = 0;
       game.mainGame.scores = [0, 0];
+      game.mainGame.activeTeam = 0;
       game.phase = 'category_select';
       sendState();
       break;
@@ -817,7 +822,7 @@ function advanceWCCategory() {
   const total = wc.categories.length;
 
   // Find next available category
-  for (let i = 1; i <= total; i++) {
+  for (let i = 1; i < total; i++) {
     const idx = (wc.currentCategory + i) % total;
     if (!wc.solved.includes(idx) && !wc.illegal.includes(idx)) {
       wc.currentCategory = idx;
